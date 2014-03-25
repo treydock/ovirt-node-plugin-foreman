@@ -9,6 +9,7 @@
 #  find-missing-libs
 #
 
+%post --nochroot --interpreter image-minimizer
 # ovirt-node and deps
 droprpm ovirt-node
 droprpm collectd
@@ -169,3 +170,4 @@ droprpm cups-libs
 # lsof
 
 # EOF
+%end
