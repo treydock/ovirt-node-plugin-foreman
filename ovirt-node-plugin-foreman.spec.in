@@ -67,10 +67,14 @@ Provides kickstart files for generating an oVirt Node ISO image containing
 
 %build
 %if "@PLUGIN_DEBUG@" == "1"
-%configure --enable-debug
-%else
-%configure
+%define debug_option "--enable-debug"
 %endif
+
+%if 0%{?rhel} == 6
+%define systemd_option "--with-systemdsystemunitdir=no"
+%endif
+
+%configure %{debug_option} %{systemd_option}
 
 %install
 %{__rm} -rf %{buildroot}
@@ -191,6 +195,12 @@ EONS
 %{_sysconfdir}/ovirt-plugins.d
 
 %changelog
+* Wed Mar 26 2014 Lukas Zapletal <lzap+rpm@redhat.com> 0.4.1-1
+- fixed issue with systemd
+
+* Wed Mar 26 2014 Lukas Zapletal <lzap+rpm@redhat.com> 0.4.0-1
+- added support for RHEL6
+
 * Thu Dec 19 2013 Lukas Zapletal <lzap+rpm@redhat.com> 0.2.0-1
 - Logging on tty1
 - Changes to /etc/issue
