@@ -36,11 +36,12 @@ Requires:       openssh-server
 Requires:       vim-minimal
 Requires:       file telnet lsof
 %endif
+Requires(post): sed shadow-utils
 
 BuildArch:      noarch
 
 %if 0%{?rhel} == 6
-Requires:       chkconfig initscripts
+Requires(post): chkconfig initscripts iptables e2fsprogs
 %else
 BuildRequires:  systemd
 %endif
@@ -74,7 +75,7 @@ Provides kickstart files for generating an oVirt Node ISO image containing
 %define systemd_option "--with-systemdsystemunitdir=no"
 %endif
 
-%configure %{debug_option} %{systemd_option}
+%configure %{?debug_option} %{?systemd_option}
 
 %install
 %{__rm} -rf %{buildroot}
@@ -91,9 +92,12 @@ sed -i 's/oVirt Node Hypervisor release/Foreman Discovery/' %{_sysconfdir}/issue
     rm -f %{_sysconfdir}/systemd/system/getty.target.wants/getty@tty1.service
 %endif
 
-# In development mode set password and enable ssh daemon (with root access)
+# Set root password to "discovery"
+echo "root:discovery" | chpasswd
+
+# Enable ssh daemon with root access when in debug mode
 %if "@PLUGIN_DEBUG@" == "1"
-echo "root:development" | chpasswd
+passwd -u root
 sed -i 's/^.*PasswordAuthentication.*$/PasswordAuthentication yes/' %{_sysconfdir}/ssh/sshd_config
 sed -i 's/^.*PermitRootLogin.*$/PermitRootLogin yes/' %{_sysconfdir}/ssh/sshd_config
 %endif
@@ -155,7 +159,6 @@ echo "foreman-proxy ALL=NOPASSWD: /sbin/shutdown" >> %{_sysconfdir}/sudoers
 # Setup network
 %if 0%{?rhel} == 6
     # Not using NetworkManager - configure network manually for first six ifaces (random order)
-    sed -i -e 's/^.*NETWORKING=.*$/NETWORKING=yes/g' %{_sysconfdir}/sysconfig/network
     for DEVICE in eth0 eth1 eth2 eth3 eth4 eth5; do
     cat > %{_sysconfdir}/sysconfig/network-scripts/ifcfg-$DEVICE <<EONS
 DEVICE=$DEVICE
@@ -164,6 +167,11 @@ ONBOOT=yes
 BOOTPROTO=dhcp
 EONS
     done
+    cat > %{_sysconfdir}/sysconfig/network <<EON
+NETWORKING=yes
+EON
+    # Prevent RHEL Anaconda from overwriting network configuration after transaction
+    chattr +i %{_sysconfdir}/sysconfig/network
     chkconfig network on
 
     # Enable smart-proxy port in firewall
@@ -195,6 +203,15 @@ EONS
 %{_sysconfdir}/ovirt-plugins.d
 
 %changelog
+* Wed Mar 26 2014 Lukas Zapletal <lzap+rpm@redhat.com> 0.4.4-1
+- prevent Anaconda from overwriting network setup
+
+* Wed Mar 26 2014 Lukas Zapletal <lzap+rpm@redhat.com> 0.4.3-1
+- root password was set in production mode (console only)
+
+* Wed Mar 26 2014 Lukas Zapletal <lzap+rpm@redhat.com> 0.4.2-1
+- fixed src/Makefile.am on RHEL6
+
 * Wed Mar 26 2014 Lukas Zapletal <lzap+rpm@redhat.com> 0.4.1-1
 - fixed issue with systemd
 

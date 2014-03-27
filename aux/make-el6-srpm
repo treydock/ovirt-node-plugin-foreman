@@ -1,0 +1,4 @@
+#!/bin/sh
+make distclean
+./autogen.sh
+RPM_FLAGS="--define 'dist .el6'" make srpms

@@ -17,7 +17,7 @@
 # MA  02110-1301, USA.  A copy of the GNU General Public License is
 # also available at http://www.gnu.org/copyleft/gpl.html.
 
-AC_INIT([ovirt-node-plugin-foreman], [0.4.1], [foreman-dev@googlegroups.com])
+AC_INIT([ovirt-node-plugin-foreman], [0.4.4], [foreman-dev@googlegroups.com])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign -Wno-portability tar-pax])
 AC_SUBST([ENGINENAME], ['Foreman Discovery'])
 PKG_PROG_PKG_CONFIG
@@ -48,7 +48,7 @@ if test "x$with_systemdsystemunitdir" != xno; then
 	AC_SUBST([systemdsystemunitdir], [$with_systemdsystemunitdir])
 fi
 AM_CONDITIONAL(HAVE_SYSTEMD, [test -n "$with_systemdsystemunitdir" -a "x$with_systemdsystemunitdir" != xno ])
-AC_MSG_RESULT([done])
+AC_MSG_RESULT($with_systemdsystemunitdir)
 
 AC_CONFIG_FILES([Makefile
 		 src/Makefile
