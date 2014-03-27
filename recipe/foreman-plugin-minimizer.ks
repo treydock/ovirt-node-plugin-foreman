@@ -12,6 +12,10 @@
 %post --nochroot --interpreter image-minimizer
 # ovirt-node and deps
 droprpm ovirt-node
+droprpm ovirt-node-selinux
+droprpm ovirt-node-plugin-cim
+droprpm ovirt-node-plugin-rhn
+droprpm ovirt-node-plugin-snmp
 droprpm collectd
 droprpm collectd-*
 
@@ -34,6 +38,7 @@ droprpm pygpgme
 droprpm pygobject*
 
 # selinux (need to provide selinux=0 kernel argument)
+droprpm selinux-policy
 droprpm selinux-policy-targeted
 droprpm policycoreutils
 
@@ -128,13 +133,16 @@ droprpm zfs-fuse
 # various RHEL6
 droprpm redhat-logos
 droprpm ca-certificates
+droprpm subscription-manager
+droprpm rhn-client-tools
 droprpm ghostscript-fonts
 droprpm ghostscript
-droprpm openldap
 droprpm flac
 droprpm lzop
 droprpm snappy
 droprpm cups-libs
+droprpm virt-who
+droprpm cronie
 
 # WARNING: Those statements breaks RHEL6 image build
 #drop /usr/share/gems/cache

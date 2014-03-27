@@ -200,6 +200,9 @@ EONS
 %{_sysconfdir}/ovirt-plugins.d
 
 %changelog
+* Wed Mar 26 2014 Lukas Zapletal <lzap+rpm@redhat.com> 0.4.6-1
+- fixed minimizer on RHEL6
+
 * Wed Mar 26 2014 Lukas Zapletal <lzap+rpm@redhat.com> 0.4.5-1
 - prevent livecd-creator from overwriting NETWORKING flag
 
