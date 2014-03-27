@@ -167,11 +167,8 @@ ONBOOT=yes
 BOOTPROTO=dhcp
 EONS
     done
-    cat > %{_sysconfdir}/sysconfig/network <<EON
-NETWORKING=yes
-EON
-    # Prevent RHEL Anaconda from overwriting network configuration after transaction
-    chattr +i %{_sysconfdir}/sysconfig/network
+    # We cannot modify sysconfig/network flag because this file gets overwritten by livecd-creator later on
+    sed -i 's/.*NETWORKING.*exit 6.*/#NETWORKING flag check turned off/' %{_sysconfdir}/init.d/network
     chkconfig network on
 
     # Enable smart-proxy port in firewall
@@ -203,6 +200,9 @@ EON
 %{_sysconfdir}/ovirt-plugins.d
 
 %changelog
+* Wed Mar 26 2014 Lukas Zapletal <lzap+rpm@redhat.com> 0.4.5-1
+- prevent livecd-creator from overwriting NETWORKING flag
+
 * Wed Mar 26 2014 Lukas Zapletal <lzap+rpm@redhat.com> 0.4.4-1
 - prevent Anaconda from overwriting network setup
 
