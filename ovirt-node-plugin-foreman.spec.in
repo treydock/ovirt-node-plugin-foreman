@@ -138,11 +138,13 @@ sed -i 's/.*:bmc_default_provider:.*/:bmc_default_provider: shell/' %{_sysconfdi
 %endif
 
 # Disable ovirt-node services (will be removed during minimizer phase later on)
+for S in ovirt ovirt-awake ovirt-early ovirt-firstboot ovirt-kdump ovirt-post; do
 %if 0%{?rhel} == 6
-    chkconfig ovirt-node on
+    chkconfig $S off
 %else
-    systemctl disable ovirt-node.service
+    systemctl disable $S.service
 %endif
+done
 
 # Set extra directory for facter
 %if 0%{?rhel} == 6
