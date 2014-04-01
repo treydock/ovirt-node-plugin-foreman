@@ -165,7 +165,7 @@ echo "foreman-proxy ALL=NOPASSWD: /sbin/shutdown" >> %{_sysconfdir}/sudoers
     sed -i -e 's/^.*SystemMaxUse.*$/SystemMaxUse=20M/g' %{_sysconfdir}/systemd/journald.conf
 %endif
 
-# Setup network
+# Setup network (excluding iptables)
 %if 0%{?rhel} == 6
     # Not using NetworkManager - configure network manually for first six ifaces (random order)
     for DEVICE in eth0 eth1 eth2 eth3 eth4 eth5; do
@@ -179,16 +179,9 @@ EONS
     # We cannot modify sysconfig/network flag because this file gets overwritten by livecd-creator later on
     sed -i 's/.*NETWORKING.*exit 6.*/#NETWORKING flag check turned off/' %{_sysconfdir}/init.d/network
     chkconfig network on
-
-    # Enable smart-proxy port in firewall
-    iptables -I INPUT 1 -m state --state NEW -m tcp -p tcp --dport 8443 -j ACCEPT
-    service iptables save
 %else
     # Systemd only - force NetworkManager to wait for IP address
     systemctl enable NetworkManager-wait-online.service
-
-    # Enable smart-proxy port in firewall
-    # TODO: Move rule from discover-host.service in here and test in Fedora 18+ and RHEL7
 %endif
 
 # When using ntpdate during start, do not pause when time servers not available
