@@ -97,9 +97,12 @@ EOIS
 
 # Enable ssh daemon with root access when in debug mode
 %if "@PLUGIN_DEBUG@" == "1"
-passwd -u root; echo "root:redhat" | chpasswd
-sed -i 's/^.*PasswordAuthentication.*$/PasswordAuthentication yes/' %{_sysconfdir}/ssh/sshd_config
-sed -i 's/^.*PermitRootLogin.*$/PermitRootLogin yes/' %{_sysconfdir}/ssh/sshd_config
+    echo "root:redhat" | chpasswd >/dev/null
+    passwd -u root >/dev/null
+    sed -i 's/^.*PasswordAuthentication.*$/PasswordAuthentication yes/' %{_sysconfdir}/ssh/sshd_config
+    sed -i 's/^.*PermitRootLogin.*$/PermitRootLogin yes/' %{_sysconfdir}/ssh/sshd_config
+%else
+    passwd -l root >/dev/null
 %endif
 
 # Configure foreman-proxy
@@ -202,6 +205,9 @@ EONS
 %{_sysconfdir}/ovirt-plugins.d
 
 %changelog
+* Tue Apr 01 2014 Lukas Zapletal <lzap+rpm@redhat.com> 0.4.7-1
+- changes necessary to run on CentOS6
+
 * Wed Mar 26 2014 Lukas Zapletal <lzap+rpm@redhat.com> 0.4.6-1
 - fixed minimizer on RHEL6
 

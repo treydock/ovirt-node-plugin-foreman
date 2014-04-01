@@ -182,10 +182,10 @@ File.unlink(PROXY_CACHE) if File.exists?(PROXY_CACHE)
 puts "\e[H\e[2J"
 println BANNER
 TAG = DEBUG ? 'D' : 'P'
-println "This is Foreman Discovery #{PACKAGE_VERSION} (#{TAG}), tty1 is reserved for logs. "
+println "This is Foreman Discovery #{PACKAGE_VERSION}-#{TAG}, tty1 is reserved for logs. "
 if DEBUG
   println "The image was build with debug support, you can switch over to tty2+ "
-  println "and login as root/development."
+  println "and login as root/redhat or use ssh (password auth enabled)."
 end
 println "Some interesting facts about this system:"
 facts = Hash[Facter.to_hash.select {|k,v| k =~ /address|hardware|manufacturer|productname|memorytotal/}]
