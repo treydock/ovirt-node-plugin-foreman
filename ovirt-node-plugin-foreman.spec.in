@@ -32,8 +32,8 @@ Requires:       facter
 Requires:       foreman-proxy
 Requires:       sudo
 %if "@PLUGIN_DEBUG@" == "1"
-Requires:       openssh-server
-Requires:       vim-minimal
+Requires:       openssh-server openssh-clients
+Requires:       vim-enhanced
 Requires:       file telnet lsof
 %endif
 Requires(post): sed shadow-utils
@@ -83,7 +83,10 @@ make install DESTDIR=%{buildroot}
 
 %post
 # Modify login issue
-sed -i 's/oVirt Node Hypervisor release/Foreman Discovery/' %{_sysconfdir}/issue
+cat >%{_sysconfdir}/issue <<EOIS
+Foreman Discovery %{version}-%{release}
+Kernel \r on an \m (\l)
+EOIS
 
 # Reserve tty1 only for logs
 %if 0%{?rhel} == 6
@@ -92,12 +95,9 @@ sed -i 's/oVirt Node Hypervisor release/Foreman Discovery/' %{_sysconfdir}/issue
     rm -f %{_sysconfdir}/systemd/system/getty.target.wants/getty@tty1.service
 %endif
 
-# Set root password to "discovery"
-echo "root:discovery" | chpasswd
-
 # Enable ssh daemon with root access when in debug mode
 %if "@PLUGIN_DEBUG@" == "1"
-passwd -u root
+passwd -u root; echo "root:redhat" | chpasswd
 sed -i 's/^.*PasswordAuthentication.*$/PasswordAuthentication yes/' %{_sysconfdir}/ssh/sshd_config
 sed -i 's/^.*PermitRootLogin.*$/PermitRootLogin yes/' %{_sysconfdir}/ssh/sshd_config
 %endif
@@ -135,6 +135,13 @@ sed -i 's/.*:bmc_default_provider:.*/:bmc_default_provider: shell/' %{_sysconfdi
     chkconfig discover-host on
 %else
     systemctl enable discover-host.service
+%endif
+
+# Disable ovirt-node services (will be removed during minimizer phase later on)
+%if 0%{?rhel} == 6
+    chkconfig ovirt-node on
+%else
+    systemctl disable ovirt-node.service
 %endif
 
 # Set extra directory for facter
