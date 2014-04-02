@@ -104,8 +104,8 @@ droprpm openssh-clients
 droprpm parted
 droprpm patch
 droprpm pciutils
-droprpm plymouth
-droprpm plymouth-*
+#droprpm plymouth
+#droprpm plymouth-*
 droprpm poppler-data
 droprpm psmisc
 droprpm PyPAM
@@ -143,6 +143,8 @@ droprpm snappy
 droprpm cups-libs
 droprpm virt-who
 droprpm cronie
+droprpm ntp
+droprpm ntpdate
 
 # WARNING: Those statements breaks RHEL6 image build
 #drop /usr/share/gems/cache

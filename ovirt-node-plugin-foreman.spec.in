@@ -140,8 +140,8 @@ sed -i 's/.*:bmc_default_provider:.*/:bmc_default_provider: shell/' %{_sysconfdi
     systemctl enable discover-host.service
 %endif
 
-# Disable ovirt-node services (will be removed during minimizer phase later on)
-for S in ovirt ovirt-awake ovirt-early ovirt-firstboot ovirt-kdump ovirt-post; do
+# Disable unwanted services (will be removed during minimizer phase later on)
+for S in ovirt ovirt-awake ovirt-early ovirt-firstboot ovirt-kdump ovirt-post ntpd ntpdate; do
 %if 0%{?rhel} == 6
     chkconfig $S off
 %else
@@ -151,7 +151,7 @@ done
 
 # Set extra directory for facter
 %if 0%{?rhel} == 6
-    echo "FACTERLIB=/usr/share/ovirt-node-plugin-foreman" >> %{_sysconfdir}/sysconfig/foreman-proxy
+    echo "export FACTERLIB=/usr/share/ovirt-node-plugin-foreman" >> %{_sysconfdir}/rc.local
 %else
     sed -i '/\[Service\]/a Environment="FACTERLIB=/usr/share/ovirt-node-plugin-foreman"' /usr/lib/systemd/system/foreman-proxy.service
 %endif
@@ -187,7 +187,7 @@ EONS
     systemctl enable NetworkManager-wait-online.service
 %endif
 
-# When using ntpdate during start, do not pause when time servers not available
+# When using ntpdate during start, do not pause when time servers not available (if service is enabled)
 [ -f %{_sysconfdir}/sysconfig/ntpdate ] && sed -i -e 's/^.*RETRIES.*$/RETRIES=0/g' %{_sysconfdir}/sysconfig/ntpdate
 
 %files recipe
