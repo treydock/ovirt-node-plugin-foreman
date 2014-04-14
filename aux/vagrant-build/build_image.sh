@@ -54,9 +54,9 @@ fi
 make iso | tee ../../make_iso.log
 popd
 popd
+mv node-ws/dev-utils/ovirt-node-iso/*iso .
 rm -rf tftpboot/
 ISO=$(ls *iso | head -n1)
-mv node-ws/dev-utils/ovirt-node-iso/*iso .
 livecd-iso-to-pxeboot $ISO
 mv -f tftpboot/vmlinuz0 $ISO-vmlinuz
 mv -f tftpboot/initrd.img $ISO-img
