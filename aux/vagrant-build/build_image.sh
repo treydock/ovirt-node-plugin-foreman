@@ -59,7 +59,7 @@ rm -rf tftpboot/
 ISO=$(ls *iso | head -n1)
 livecd-iso-to-pxeboot $ISO
 mv -f tftpboot/vmlinuz0 $ISO-vmlinuz
-mv -f tftpboot/initrd.img $ISO-img
+mv -f tftpboot/initrd0.img $ISO-img
 ls *iso -la
 popd
 setenforce $SELINUXMODE
