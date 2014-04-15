@@ -36,6 +36,7 @@ require 'resolv'
 require 'rubygems'
 require 'facter'
 require 'yaml'
+require 'json'
 
 BANNER = <<'EOS'
 
@@ -137,21 +138,19 @@ rescue
 end
 
 def upload
-  ip = Facter.value('ipaddress')
   uri = discover_server
   error "Could not determine Foreman instance, add kernel command option" unless uri
-  println "Triggering import of facts from Foreman (#{uri}, ip=#{ip})"
-  data = ip.nil? ? {} : {'ip' => ip}
+  println "Registering host with Foreman (#{uri})"
   http = Net::HTTP.new(uri.host, uri.port)
   if uri.scheme == 'https' then
     http.use_ssl = true
     http.verify_mode = OpenSSL::SSL::VERIFY_NONE
   end
-  req = Net::HTTP::Post.new("/discovers")
-  req.set_form_data(data)
+  req = Net::HTTP::Post.new("/api/v2/discovers/facts", initheader = {'Content-Type' =>'application/json'})
+  req.body = {'facts' => Facter.to_hash }.to_json
   response = http.request(req)
   debug "Response from Foreman #{response.code}: #{response.body}"
-  if response.code == "200"
+  if ['200','201'].include? response.code
     return true
   else
     return false
