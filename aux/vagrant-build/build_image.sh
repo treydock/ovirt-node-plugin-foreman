@@ -55,9 +55,10 @@ make iso | tee ../../make_iso.log
 popd
 popd
 mv node-ws/dev-utils/ovirt-node-iso/*iso .
-rm -rf tftpboot/
+rm -rf tftpboot/ foreman.iso
 ISO=$(ls *iso | head -n1)
-livecd-iso-to-pxeboot $ISO
+ln -fs $ISO foreman.iso
+livecd-iso-to-pxeboot foreman.iso
 mv -f tftpboot/vmlinuz0 $ISO-vmlinuz
 mv -f tftpboot/initrd0.img $ISO-img
 ls *iso -la
