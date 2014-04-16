@@ -153,6 +153,20 @@ def upload
   if ['200','201'].include? response.code
     return true
   else
+    # <FIXME> - remove for Foreman 1.6
+    # For backward compatibility reasons try to upload facts with the old method
+    debug "Triggering import of facts from Foreman using old API (#{uri}, ip=#{ip})"
+    req = Net::HTTP::Post.new("/discovers")
+    ip = Facter.value('ipaddress')
+    data = ip.nil? ? {} : {'ip' => ip}
+    req.set_form_data(data)
+    debug "Response from Foreman #{response.code}: #{response.body}"
+    if response.code == "200"
+      return true
+    else
+      return false
+    end
+    # </FIXME>
     return false
   end
 rescue => e
