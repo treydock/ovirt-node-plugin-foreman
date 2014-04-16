@@ -43,6 +43,8 @@ pushd node-ws
 [ -d ovirt-node-dev-utils ] || \
   git clone https://github.com/fabiand/ovirt-node-dev-utils.git dev-utils
 pushd dev-utils
+# FIXME temporary fix until https://github.com/fabiand/ovirt-node-dev-utils/pull/2 is resolved
+sed "s/yum/yum -y/g" -i makefile.workspace
 [ -d ovirt-node ] || make install-build-requirements clone-repos
 grep $PLUGIN ovirt-node/recipe/common-pkgs.ks || \
   echo $PLUGIN >> ovirt-node/recipe/common-pkgs.ks
