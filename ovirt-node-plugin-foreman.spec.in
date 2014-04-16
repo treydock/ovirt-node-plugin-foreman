@@ -33,7 +33,6 @@ Requires:       foreman-proxy
 Requires:       sudo
 %if "@PLUGIN_DEBUG@" == "1"
 Requires:       openssh-server openssh-clients
-Requires:       vim-enhanced
 Requires:       file telnet lsof
 %endif
 Requires(post): sed shadow-utils
@@ -141,7 +140,7 @@ sed -i 's/.*:bmc_default_provider:.*/:bmc_default_provider: shell/' %{_sysconfdi
 %endif
 
 # Disable unwanted services (will be removed during minimizer phase later on)
-for S in ovirt ovirt-awake ovirt-early ovirt-firstboot ovirt-kdump ovirt-post ntpd ntpdate; do
+for S in ovirt ovirt-awake ovirt-early ovirt-firstboot ovirt-kdump ovirt-post ntpd ntpdate iscsi iscsid kdump ksm ksmtuned nfslock rpcbind; do
 %if 0%{?rhel} == 6
     chkconfig $S off
 %else
@@ -151,7 +150,7 @@ done
 
 # Set extra directory for facter
 %if 0%{?rhel} == 6
-    echo "export FACTERLIB=/usr/share/ovirt-node-plugin-foreman" >> %{_sysconfdir}/rc.local
+    echo "export FACTERLIB=/usr/share/ovirt-node-plugin-foreman" >> %{_sysconfdir}/sysconfig/foreman-proxy
 %else
     sed -i '/\[Service\]/a Environment="FACTERLIB=/usr/share/ovirt-node-plugin-foreman"' /usr/lib/systemd/system/foreman-proxy.service
 %endif
@@ -190,13 +189,16 @@ EONS
 # When using ntpdate during start, do not pause when time servers not available (if service is enabled)
 [ -f %{_sysconfdir}/sysconfig/ntpdate ] && sed -i -e 's/^.*RETRIES.*$/RETRIES=0/g' %{_sysconfdir}/sysconfig/ntpdate
 
+# Developer enhacements
+echo "alias vim=vi" >> /root/.bashrc
+
 %files recipe
 %{recipe_root}
 
 %files
 %{_bindir}/discover-host.rb
 %{_bindir}/find-missing-libs
-%{_datadir}/%{name}/discovery-version-fact.rb
+%{_datadir}/%{name}/discovery-facts.rb
 %if 0%{?rhel} == 6
 %{_sysconfdir}/rc.d/init.d/discover-host
 %else

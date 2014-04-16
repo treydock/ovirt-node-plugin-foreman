@@ -28,10 +28,10 @@ initddir = $(sysconfdir)/rc.d/init.d
 initd_SCRIPTS = discover-host
 endif
 
-dist_pkgdata_DATA = discovery-version-fact.rb
+dist_pkgdata_DATA = discovery-facts.rb
 
 EXTRA_DIST = discover-host
 
 CLEANFILES = \
 	     discover-host.rb \
-	     discovery-version-fact.rb
+	     discovery-facts.rb

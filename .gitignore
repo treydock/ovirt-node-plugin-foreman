@@ -12,4 +12,5 @@ config.status
 config.log
 src/discover-host.rb
 src/discovery-version-fact.rb
+src/discovery-facts.rb
 conf/foreman-plugin.firewall

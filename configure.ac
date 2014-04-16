@@ -56,7 +56,7 @@ AC_CONFIG_FILES([Makefile
 		 recipe/Makefile
 		 src/discover-host.rb
 		 conf/foreman-plugin.firewall
-		 src/discovery-version-fact.rb
+		 src/discovery-facts.rb
 		 ovirt-node-plugin-foreman.spec])
 
 AC_OUTPUT

@@ -212,6 +212,6 @@ while true do
   unless YAML.load(read_cache) == facts
     debug "Fact cache invalid, reloading to foreman"
     write_cache(YAML.dump(facts)) if upload
-    sleep DEBUG ? 30 : 60
   end
+  sleep DEBUG ? 30 : 120
 end
