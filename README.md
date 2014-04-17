@@ -7,24 +7,86 @@ project.
 Downloading image
 -----------------
 
-We provide download links on the [Foreman Discovery plugin
-page](https://github.com/theforeman/foreman_discovery):
-
  * http://yum.theforeman.org/discovery/
 
-You can download four versions:
+Nightly builds has ssh daemon enabled and root password set to "redhat" and
+logging is increased while releases do have root account locked and there is
+no ssh access at all. We provide images based on the following distributions:
 
- * Fedora based, production
- * RHEL based, production
- * Fedora based, debug
- * RHEL based, debug
+ * Fedora 18
+ * CentOS 6
 
-The production images have the root account locked and there is no ssh daemon
-running on the image.
+First console (tty1) is reserved for Discovery output, if you want to log in
+use tty2 or higher console.
 
-On the debug images, the root password is set to "redhat" and ssh daemon is
-listening on the standard port. Also logging of discover-host and
-foreman-proxy services is increased to DEBUG level.
+Installation
+------------
+
+Download either both kernel and image RAM disk:
+
+ * ovirt-node-iso-3.X.0-0.999.201404170648.el6.iso-img
+ * ovirt-node-iso-3.X.0-0.999.201404170648.el6.iso-vmlinuz
+
+or ISO file:
+
+ * ovirt-node-iso-3.X.0-0.999.201404170648.el6.iso
+
+If you downloaded kernel and image, you can skip to Set Foreman bellow. If you
+downloaded the ISO file, you need to extract it first:
+
+    # yum -y install livecd-tools
+    # ln -sf ovirt-node-iso-3.X.0-0.999.201404170648.el6.iso foreman.iso
+    # sudo livecd-iso-to-pxeboot foreman.iso
+    # find tftpboot/
+    tftpboot/
+    tftpboot/vmlinuz0
+    tftpboot/pxelinux.0
+    tftpboot/pxelinux.cfg
+    tftpboot/pxelinux.cfg/default
+    tftpboot/initrd0.img
+
+Now, copy *vmlinuz0* and *initrd0.img* files to your TFTP BOOT directory and
+rename them appropriately.
+
+Set Foreman
+-----------
+
+To activate Foreman Discovery edit *PXELinux global default* template and add
+new menu item:
+
+    LABEL discovery
+    MENU LABEL Foreman Discovery
+    MENU DEFAULT
+    KERNEL boot/tftpboot/vmlinuz0
+    APPEND rootflags=loop initrd=boot/tftpboot/initrd0.img root=live:/foreman.iso rootfstype=auto ro rd.live.image rd.live.check rd.lvm=0 rootflags=ro crashkernel=128M elevator=deadline max_loop=256 rd.luks=0 rd.md=0 rd.dm=0 nomodeset selinux=0 stateless foreman.url=https://foreman.example.com
+    IPAPPEND 2
+
+To set the menu item default, change the above snippet to something like
+
+    DEFAULT menu
+    PROMPT 0
+    MENU TITLE PXE Menu
+    TIMEOUT 200
+    TOTALTIMEOUT 6000
+    ONTIMEOUT discovery
+
+Note the `foreman.url` that defines where foreman instance really is. You can
+use both https or http. Make sure this is set correctly.
+
+Discovery image searches for DNS SRV record named `_x-foreman._tcp`. If you
+setup your DNS server for that (example for ISC BIND), then you do not need to
+provide `foreman.url`:
+
+    _x-foreman._tcp SRV 0 5 443 foreman
+
+This can still be overriden with the command line opts.
+
+It is important to have *IPAPPEND 2* option which adds BOOTIF=MAC option which
+is then reported via facter as `discovery_bootif` which is key fact which is
+used for provisioning.
+
+_Warning_: For now, you need to provide selinux=0 option, the image is read
+only anyway but we plan to enable and test with SELinux too.
 
 Building the plugin
 -------------------
@@ -51,10 +113,3 @@ automatically downloaded when using our Vagrant file.
 
 The Vagrant file will spawn an image according the options, build the oVirt
 Node plugin and build the image.
-
-Setup Foreman templates
------------------------
-
-To setup Foreman templates head over to [Foreman Discovery plugin
-page](https://github.com/theforeman/foreman_discovery).
-
