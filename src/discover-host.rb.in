@@ -155,11 +155,12 @@ def upload
   else
     # <FIXME> - remove for Foreman 1.6
     # For backward compatibility reasons try to upload facts with the old method
+    ip = Facter.value('ipaddress')
     debug "Triggering import of facts from Foreman using old API (#{uri}, ip=#{ip})"
     req = Net::HTTP::Post.new("/discovers")
-    ip = Facter.value('ipaddress')
     data = ip.nil? ? {} : {'ip' => ip}
     req.set_form_data(data)
+    response = http.request(req)
     debug "Response from Foreman #{response.code}: #{response.body}"
     if response.code == "200"
       return true
