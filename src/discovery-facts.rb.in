@@ -36,6 +36,6 @@ end
 
 Facter.add("discovery_bootif") do
   setcode do
-    cmdline 'BOOTIF', Facter.fact("macaddress").value
+    cmdline('BOOTIF', Facter.fact("macaddress").value).gsub('-', ':') rescue '00:00:00:00:00:00'
   end
 end

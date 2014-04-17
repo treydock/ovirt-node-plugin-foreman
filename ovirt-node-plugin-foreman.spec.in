@@ -207,6 +207,11 @@ echo "alias vim=vi" >> /root/.bashrc
 %{_sysconfdir}/ovirt-plugins.d
 
 %changelog
+* Thu Apr 17 2014 lzap+rpm@redhat.com 0.5.0-1
+- added discovery_bootif fact
+- image now use V2 API to upload facts
+- fallbacks to V1 for backward compatibility
+
 * Tue Apr 01 2014 Lukas Zapletal <lzap+rpm@redhat.com> 0.4.7-1
 - changes necessary to run on CentOS6
 
