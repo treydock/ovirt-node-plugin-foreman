@@ -36,6 +36,7 @@ end
 
 Facter.add("discovery_bootif") do
   setcode do
-    cmdline('BOOTIF', Facter.fact("macaddress").value).gsub('-', ':') rescue '00:00:00:00:00:00'
+    # PXELinux dash-separated hexadecimal *without* the leading hardware type
+    cmdline('BOOTIF', Facter.fact("macaddress").value).gsub(/^[a-fA-F0-9]+-/, '').gsub('-', ':') rescue '00:00:00:00:00:00'
   end
 end
