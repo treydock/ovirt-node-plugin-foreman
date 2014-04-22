@@ -43,8 +43,6 @@ pushd node-ws
 [ -d ovirt-node-dev-utils ] || \
   git clone https://github.com/fabiand/ovirt-node-dev-utils.git dev-utils
 pushd dev-utils
-# FIXME temporary fix until https://github.com/fabiand/ovirt-node-dev-utils/pull/2 is resolved
-sed "s/yum/yum -y/g" -i makefile.workspace
 [ -d ovirt-node ] || make install-build-requirements clone-repos
 grep $PLUGIN ovirt-node/recipe/common-pkgs.ks || \
   echo $PLUGIN >> ovirt-node/recipe/common-pkgs.ks
@@ -57,6 +55,8 @@ make iso | tee ../../make_iso.log
 popd
 popd
 mv node-ws/dev-utils/ovirt-node-iso/*iso .
+cp node-ws/dev-utils/ovirt-node-iso/ovirt-node-iso.ks .
+cat ovirt-node-iso.ks
 rm -rf tftpboot/ foreman.iso
 ISO=$(ls *iso | head -n1)
 ln -fs $ISO foreman.iso
