@@ -25,12 +25,14 @@ if HAVE_SYSTEMD
 dist_systemdsystemunit_DATA = discover-host.service
 else
 initddir = $(sysconfdir)/rc.d/init.d
-initd_SCRIPTS = discover-host
+initd_SCRIPTS = discover-host \
+		network-dynamic
 endif
 
 dist_pkgdata_DATA = discovery-facts.rb
 
-EXTRA_DIST = discover-host
+EXTRA_DIST = discover-host \
+	     network-dynamic
 
 CLEANFILES = \
 	     discover-host.rb \

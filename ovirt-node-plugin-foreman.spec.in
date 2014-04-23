@@ -169,18 +169,13 @@ echo "foreman-proxy ALL=NOPASSWD: /sbin/shutdown" >> %{_sysconfdir}/sudoers
 
 # Setup network (excluding iptables)
 %if 0%{?rhel} == 6
-    # Not using NetworkManager - configure network manually for first six ifaces (random order)
-    for DEVICE in eth0 eth1 eth2 eth3 eth4 eth5; do
-    cat > %{_sysconfdir}/sysconfig/network-scripts/ifcfg-$DEVICE <<EONS
-DEVICE=$DEVICE
-NM_CONTROLLED=no
-ONBOOT=yes
-BOOTPROTO=dhcp
-EONS
-    done
+    # Not using NetworkManager - configure network using our own start script
+    chkconfig --add network-dynamic
+    chkconfig network-dynamic on
+    chkconfig network off
+
     # We cannot modify sysconfig/network flag because this file gets overwritten by livecd-creator later on
     sed -i 's/.*NETWORKING.*exit 6.*/#NETWORKING flag check turned off/' %{_sysconfdir}/init.d/network
-    chkconfig network on
 %else
     # Systemd only - force NetworkManager to wait for IP address
     systemctl enable NetworkManager-wait-online.service
@@ -201,12 +196,16 @@ echo "alias vim=vi" >> /root/.bashrc
 %{_datadir}/%{name}/discovery-facts.rb
 %if 0%{?rhel} == 6
 %{_sysconfdir}/rc.d/init.d/discover-host
+%{_sysconfdir}/rc.d/init.d/network-dynamic
 %else
 %{_unitdir}/discover-host.service
 %endif
 %{_sysconfdir}/ovirt-plugins.d
 
 %changelog
+* Tue Apr 22 2014 Lukas Zapletal <lzap+rpm@redhat.com> 0.5.3-1
+- added network-dynamic script for RHEL6
+
 * Tue Apr 22 2014 Lukas Zapletal <lzap+rpm@redhat.com> 0.5.2-1
 - stripped the leading hardware type for the BOOTIF PXELinux MAC
 
