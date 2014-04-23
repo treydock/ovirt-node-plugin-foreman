@@ -173,14 +173,6 @@ echo "foreman-proxy ALL=NOPASSWD: /sbin/shutdown" >> %{_sysconfdir}/sudoers
     chkconfig --add network-dynamic
     chkconfig network-dynamic on
     chkconfig network off
-    for DEVICE in eth0 eth1 eth2 eth3 eth4 eth5 eth6 eth7 eth8 eth9 em0 em1 em2 em3 em4 em5 em6 em7 em8 em9; do
-    cat > %{_sysconfdir}/sysconfig/network-scripts/ifcfg-$DEVICE <<EONS
-DEVICE=$DEVICE
-NM_CONTROLLED=no
-ONBOOT=no
-BOOTPROTO=dhcp
-EONS
-    done
 
     # We cannot modify sysconfig/network flag because this file gets overwritten by livecd-creator later on
     sed -i 's/.*NETWORKING.*exit 6.*/#NETWORKING flag check turned off/' %{_sysconfdir}/init.d/network

@@ -19,6 +19,13 @@ start_or_stop() {
 	for i in /sys/class/net/*; do 
 		dev=$(basename $i)
 		echo -n $"Executing $1 on $dev network interface: "
+		script=/etc/sysconfig/network-scripts/ifcfg-$dev
+		[ -f $script ] || cat > $script <<EONS
+DEVICE=$dev
+NM_CONTROLLED=no
+ONBOOT=no
+BOOTPROTO=dhcp
+EONS
 		$1 $dev
 		echo
 	done
