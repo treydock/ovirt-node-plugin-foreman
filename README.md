@@ -19,6 +19,18 @@ no ssh access at all. We provide images based on the following distributions:
 First console (tty1) is reserved for Discovery output, if you want to log in
 use tty2 or higher console.
 
+Minimal hardware requirements
+-----------------------------
+
+Since the live image runs from memory, keep in mind the following minimum
+requirements on the hardware that is being discovered:
+
+* 700 MB RAM for CentOS6 image
+* 900 MB RAM for Fedora19 image
+
+When testing those images on hypervisors, make sure you allocated enough
+memory, otherwise kernel panic can be seen during boot sequence.
+
 Installation
 ------------
 
