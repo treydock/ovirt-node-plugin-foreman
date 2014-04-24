@@ -1,67 +1,50 @@
 #!/bin/sh
 #
-# network       Bring up/down networking dynamically
+# network-dynamic   Configure net interfaces dynamically
 #
-# chkconfig: 2345 10 90
-# description: Activates/Deactivates all network interfaces except lo
+# chkconfig: 2345 09 91
+# description: Configures all network interfaces
 #
 ### BEGIN INIT INFO
-# Provides: $network
-# Should-Start: iptables ip6tables
-# Short-Description: Bring up/down networking dynamically except lo
-# Description: Bring up/down networking dynamically except lo
+# Short-Description: Configures networking dynamically
+# Description: Configures networking dynamically
 ### END INIT INFO
 
 # Source function library.
 . /etc/rc.d/init.d/functions
 
-start_or_stop() {
-	for i in /sys/class/net/*; do 
+configure() {
+	for i in /sys/class/net/*; do
 		dev=$(basename $i)
-		echo -n $"Executing $1 on $dev network interface: "
+		echo -n $"Configuring $dev network interface: "
 		script=/etc/sysconfig/network-scripts/ifcfg-$dev
 		[ -f $script ] || cat > $script <<EONS
 DEVICE=$dev
 NM_CONTROLLED=no
-ONBOOT=no
+ONBOOT=yes
 BOOTPROTO=dhcp
 EONS
-		$1 $dev
 		echo
 	done
 	return 0
 }
 
-restart() {
-	stop
-	start
-}
-
-reload() {
-	restart
-}
-
 case "$1" in
 	start)
-		start_or_stop ifup
+		configure
 		;;
 	stop)
-		start_or_stop ifdown
 		;;
 	restart)
-		$1
 		;;
 	reload)
-		$1
 		;;
 	status)
-		ifconfig lo >/dev/null 2>&1
 		;;
 	condrestart|try-restart)
-		restart
 		;;
 	*)
-		echo $"Usage: $0 {start|stop|restart|condrestart|try-restart|reload}"
+		echo $"Usage: $0 {start}"
 		exit 2
 esac
 exit $?

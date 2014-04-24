@@ -172,7 +172,7 @@ echo "foreman-proxy ALL=NOPASSWD: /sbin/shutdown" >> %{_sysconfdir}/sudoers
     # Not using NetworkManager - configure network using our own start script
     chkconfig --add network-dynamic
     chkconfig network-dynamic on
-    chkconfig network off
+    chkconfig network on
 
     # We cannot modify sysconfig/network flag because this file gets overwritten by livecd-creator later on
     sed -i 's/.*NETWORKING.*exit 6.*/#NETWORKING flag check turned off/' %{_sysconfdir}/init.d/network
