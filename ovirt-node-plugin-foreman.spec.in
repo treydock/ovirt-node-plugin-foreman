@@ -203,6 +203,10 @@ echo "alias vim=vi" >> /root/.bashrc
 %{_sysconfdir}/ovirt-plugins.d
 
 %changelog
+* Thu Apr 24 2014 Lukas Zapletal <lzap+rpm@redhat.com> 0.5.4-1
+- fixed network-dynamic script for RHEL6
+- added BOOTIF facts in the discover-host environment
+
 * Tue Apr 22 2014 Lukas Zapletal <lzap+rpm@redhat.com> 0.5.3-1
 - added network-dynamic script for RHEL6
 

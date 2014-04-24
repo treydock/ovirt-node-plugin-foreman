@@ -21,10 +21,12 @@
 NAME=discover-host.rb
 DAEMON=/usr/bin/$NAME
 
+
 start() {
         [ -x $DAEMON ] || exit 5
 
 		iptables -I INPUT 1 -m state --state NEW -m tcp -p tcp --dport 8443 -j ACCEPT
+		export FACTERLIB=/usr/share/ovirt-node-plugin-foreman
 		sleep 10
 
         echo -n $"Starting $NAME: "
