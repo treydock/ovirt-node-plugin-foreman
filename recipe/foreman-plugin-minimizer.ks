@@ -3,7 +3,7 @@
 # Use this to find interesting packages in the image:
 #
 #  rpm -qa --queryformat '%{SIZE} %{NAME}\n' | sort -n -r | head -n100
-# 
+#
 # Use this tool (part of this plugin) to check for missing libs:
 #
 #  find-missing-libs

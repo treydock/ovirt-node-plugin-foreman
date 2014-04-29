@@ -109,9 +109,6 @@ option to enable debugging mode image:
     make distclean
     ./autogen.sh --enable-debug
 
-Building
---------
-
 Building is tested currently on Fedora 18 and RHEL 6.5 or clones.
 
 Follow instructions on [oVirt
@@ -125,3 +122,16 @@ automatically downloaded when using our Vagrant file.
 
 The Vagrant file will spawn an image according the options, build the oVirt
 Node plugin and build the image.
+
+Building on our Jenkins instance
+--------------------------------
+
+If you have access to our Jenkins instance (Foreman core or community
+developers do) you can clone this repository, push changes into branch and
+[trigger](http://ci.theforeman.org/view/Packaging/job/packaging_discovery_node/)
+new build after sign-in giving the job `repoowner` and `branch` name and
+`output_dir` in a format of scratch-myname. Result will be available on our
+[official yum repo server](http://yum.theforeman.org/discovery/).
+
+You can also build using Vagrant which is usually faster, see above.
+
