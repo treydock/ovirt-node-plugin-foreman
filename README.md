@@ -34,6 +34,17 @@ memory, otherwise kernel panic can be seen during boot sequence.
 Installation
 ------------
 
+Our installer is able to automatically download latest stable CentOS6 images.
+For this, re-run the installer with the following option:
+
+    # foreman-installer --foreman-plugin-discovery-install-images=true
+
+You can always download and install manually if you want. See bellow. Once the
+image/kernel are downloaded, proceed with template configuration.
+
+Manual Installation
+-------------------
+
 Download either both kernel and image RAM disk:
 
  * ovirt-node-iso-3.X.0-0.999.201404170648.el6.iso-img
