@@ -131,6 +131,9 @@ sed -i 's/.*:bmc_default_provider:.*/:bmc_default_provider: shell/' %{_sysconfdi
     systemctl enable foreman-proxy.service
 %endif
 
+# Set setuid for those binaries that need root (and are called by foreman-proxy user)
+chmod +s /usr/sbin/dmidecode
+
 # Enable Discover Host service (must be executed as the last - idle - service)
 %if 0%{?rhel} == 6
     chkconfig --add discover-host
