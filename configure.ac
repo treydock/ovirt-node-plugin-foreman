@@ -28,7 +28,7 @@ AC_ARG_ENABLE(debug,
 		       [turn on debug support (starts ssh daemon and sets root password)]))
 if test x$enable_debug = xyes; then
 	AC_MSG_RESULT([yes])
-	AC_MSG_NOTICE([WARNING: ssh daemon enabled and root password set to 'development'])
+	AC_MSG_NOTICE([WARNING: ssh daemon enabled and root password set to 'redhat'])
 	PLUGIN_DEBUG=1
 	EXTRA_FIREWALL_RULE="22,tcp"
 else
