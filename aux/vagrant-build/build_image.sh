@@ -23,7 +23,7 @@ export OVIRT_CACHE_DIR=~/ovirt-cache
 export OVIRT_LOCAL_REPO=file://${OVIRT_CACHE_DIR}/ovirt
 export REPO="$proxy_repo"
 mkdir -p $OVIRT_CACHE_DIR
-[ -d $PLUGIN ] || git clone https://github.com/$repoowner/$PLUGIN.git -b $branch
+[ -d $PLUGIN ] || git clone --depth 1 https://github.com/$repoowner/$PLUGIN.git -b $branch
 pushd $PLUGIN
 git pull
 if [[ "$debug" == "debug" ]]; then
@@ -41,7 +41,7 @@ chmod +x /usr/bin/image-minimizer
 mkdir node-ws 2>/dev/null
 pushd node-ws
 [ -d ovirt-node-dev-utils ] || \
-  git clone https://github.com/fabiand/ovirt-node-dev-utils.git dev-utils
+  git clone --depth 1 -b 1518cf7ee6d93 https://github.com/fabiand/ovirt-node-dev-utils.git dev-utils
 pushd dev-utils
 [ -d ovirt-node ] || make install-build-requirements clone-repos
 grep $PLUGIN ovirt-node/recipe/common-pkgs.ks || \
