@@ -43,7 +43,7 @@ chmod +x /usr/bin/image-minimizer
 mkdir node-ws 2>/dev/null
 pushd node-ws
 [ -d ovirt-node-dev-utils ] || \
-  git clone --depth 1 -b ovirt_node_tools_gittag https://github.com/fabiand/ovirt-node-dev-utils.git dev-utils
+  git clone --depth 1 -b $ovirt_node_tools_gittag https://github.com/fabiand/ovirt-node-dev-utils.git dev-utils
 pushd dev-utils
 [ -d ovirt-node ] || make install-build-requirements clone-repos git-update WITH_GIT_BRANCH=$WITH_GIT_BRANCH
 grep $PLUGIN ovirt-node/recipe/common-pkgs.ks || \
