@@ -2,10 +2,12 @@
 # vim: sw=2:ts=2:et
 set -x
 PLUGIN=ovirt-node-plugin-foreman
-debug=${1:-debug}
-proxy_repo=${2:-http://yum.theforeman.org/releases/1.4/el6/x86_64/}
-repoowner=${3:-theforeman}
-branch=${4:-master}
+export debug=${1:-debug}
+export proxy_repo=${2:-http://yum.theforeman.org/nightly/el6/x86_64/}
+export repoowner=${3:-theforeman}
+export branch=${4:-master}
+export ovirt_node_tools_gittag=${5:-master}
+export WITH_GIT_BRANCH=${6:-master}
 
 # give the VM some time to finish booting and network configuration
 sleep 30
@@ -41,7 +43,7 @@ chmod +x /usr/bin/image-minimizer
 mkdir node-ws 2>/dev/null
 pushd node-ws
 [ -d ovirt-node-dev-utils ] || \
-  git clone --depth 1 -b 1518cf7ee6d93 https://github.com/fabiand/ovirt-node-dev-utils.git dev-utils
+  git clone --depth 1 -b ovirt_node_tools_gittag https://github.com/fabiand/ovirt-node-dev-utils.git dev-utils
 pushd dev-utils
 [ -d ovirt-node ] || make install-build-requirements clone-repos
 grep $PLUGIN ovirt-node/recipe/common-pkgs.ks || \
@@ -51,7 +53,7 @@ if [[ "$debug" == "debug" ]]; then
 else
   sed -i 's/.*passwd -l root/passwd -l root/g' ovirt-node/recipe/common-post.ks
 fi
-make iso | tee ../../make_iso.log
+make git-update iso WITH_GIT_BRANCH=$WITH_GIT_BRANCH | tee ../../make_iso.log
 popd
 popd
 mv node-ws/dev-utils/ovirt-node-iso/*iso .

@@ -14,10 +14,12 @@ if ENV['box']
 end
 
 SHELLARGS = []
-SHELLARGS << ENV['debug'] if ENV['debug']
-SHELLARGS << ENV['proxy_repo'] if ENV['proxy_repo']
-SHELLARGS << ENV['repoowner'] if ENV['repoowner']
-SHELLARGS << ENV['branch'] if ENV['branch']
+SHELLARGS << ENV['debug'] || ''
+SHELLARGS << ENV['proxy_repo'] || ''
+SHELLARGS << ENV['repoowner'] || ''
+SHELLARGS << ENV['branch'] || ''
+SHELLARGS << ENV['ovirt_node_tools_gittag'] || ''
+SHELLARGS << ENV['ovirt_git_branch'] || ''
 
 Vagrant.configure("2") do |config|
   boxes.each do |box|
