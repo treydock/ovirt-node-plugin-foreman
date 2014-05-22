@@ -58,7 +58,7 @@ popd
 popd
 mv node-ws/dev-utils/ovirt-node-iso/*iso .
 cp node-ws/dev-utils/ovirt-node-iso/ovirt-node-iso.ks .
-cat ovirt-node-iso.ks
+cat ovirt-node-base-iso.ks
 rm -rf tftpboot/ foreman.iso
 ISO=$(ls *iso | head -n1)
 ln -fs $ISO foreman.iso
