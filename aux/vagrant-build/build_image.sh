@@ -45,7 +45,7 @@ pushd node-ws
 [ -d ovirt-node-dev-utils ] || \
   git clone --depth 1 -b ovirt_node_tools_gittag https://github.com/fabiand/ovirt-node-dev-utils.git dev-utils
 pushd dev-utils
-[ -d ovirt-node ] || make install-build-requirements clone-repos
+[ -d ovirt-node ] || make install-build-requirements clone-repos git-update
 grep $PLUGIN ovirt-node/recipe/common-pkgs.ks || \
   echo $PLUGIN >> ovirt-node/recipe/common-pkgs.ks
 if [[ "$debug" == "debug" ]]; then
@@ -53,7 +53,7 @@ if [[ "$debug" == "debug" ]]; then
 else
   sed -i 's/.*passwd -l root/passwd -l root/g' ovirt-node/recipe/common-post.ks
 fi
-make git-update iso WITH_GIT_BRANCH=$WITH_GIT_BRANCH | tee ../../make_iso.log
+make iso | tee ../../make_iso.log
 popd
 popd
 mv node-ws/dev-utils/ovirt-node-iso/*iso .
