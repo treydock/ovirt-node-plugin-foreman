@@ -16,15 +16,28 @@
 configure() {
 	for i in /sys/class/net/*; do
 		dev=$(basename $i)
-		echo -n $"Configuring $dev network interface: "
+		mac=$(cat /sys/class/net/$dev/address | tr A-F- a-f:)
+		bootif=$(cat /proc/cmdline | grep -io 'BOOTIF=\S*' | tail -n1 | tr A-F- a-f: | cut -d: -f2-7)
+		if [[ "$mac" == "$bootif" ]]; then
+			peerdns=yes
+		else
+			peerdns=no
+		fi
+		echo -n $"Configuring $dev ($mac) network interface: "
 		script=/etc/sysconfig/network-scripts/ifcfg-$dev
-		[ -f $script ] || cat > $script <<EONS
+		cat > $script <<EONS
 DEVICE=$dev
 NM_CONTROLLED=no
 ONBOOT=yes
 BOOTPROTO=dhcp
+PEERDNS=$peerdns
 EONS
 		echo
+		# prevent from overwriting our configuration
+		for SVS in ovirt ovirt-awake ovirt-early ovirt-firstboot ovirt-kdump; do
+			chkconfig $SVS off
+		done
+		chattr +i $script
 	done
 	return 0
 }
