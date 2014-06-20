@@ -206,6 +206,10 @@ echo "alias vim=vi" >> /root/.bashrc
 %{_sysconfdir}/ovirt-plugins.d
 
 %changelog
+* Fri Jun 20 2014 Lukas Zapletal <lzap+rpm@redhat.com> 0.5.9999-1
+- development version build
+- PEERDNS set only for the BOOTIF interface
+
 * Wed May 21 2014 Lukas Zapletal <lzap+rpm@redhat.com> 0.5.5-1
 - changed V2 API base url
 
