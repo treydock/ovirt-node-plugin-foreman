@@ -20,7 +20,7 @@
 Summary:        A plugin for Foreman Discovery nodes
 Name:           ovirt-node-plugin-foreman
 Version:        @VERSION@
-Release:        1%{?BUILD_NUMBER}%{?extra_release}%{?dist}
+Release:        2%{?BUILD_NUMBER}%{?extra_release}%{?dist}
 Source0:        %{name}-%{version}.tar.gz
 License:        GPLv2+
 Group:          Applications/System
@@ -206,6 +206,9 @@ echo "alias vim=vi" >> /root/.bashrc
 %{_sysconfdir}/ovirt-plugins.d
 
 %changelog
+* Tue Jun 24 2014 Lukas Zapletal <lzap+rpm@redhat.com> 0.5.9999-2
+- do not overwrite ifcfg-lo configuration (dhclient segfault)
+
 * Fri Jun 20 2014 Lukas Zapletal <lzap+rpm@redhat.com> 0.5.9999-1
 - development version build
 - PEERDNS set only for the BOOTIF interface
