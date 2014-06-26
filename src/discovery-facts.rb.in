@@ -40,3 +40,40 @@ Facter.add("discovery_bootif") do
     cmdline('BOOTIF', Facter.fact("macaddress").value).gsub(/^[a-fA-F0-9]+-/, '').gsub('-', ':') rescue '00:00:00:00:00:00'
   end
 end
+
+require 'facter/util/ip'
+
+Facter::Util::IP.get_interfaces.each do |interface|
+  Facter.debug("Running ethtool on interface #{interface}")
+  output = (Facter::Util::Resolution.exec("ethtool #{interface} 2>/dev/null"))
+  attributes = {}
+  output.each_line do |line|
+    next if line.nil? or line == ""
+    case line.strip
+    when /Speed: (.*)Mb/
+      attributes[:speed] = $1
+    when /Duplex: (.*)/
+      attributes[:duplex] = $1.downcase
+    when /Port: (.*)/
+      attributes[:port] = $1
+    when /Auto-negotiation: (.*)/
+      attributes[:auto_negotitation] = $1 == 'on'
+    when /^Wake-on: (.*)/
+      attributes[:wol] = $1.include?('g')
+    when /Link detected: (.*)/
+      attributes[:link] = $1 == 'yes'
+    end
+  end
+
+  if attributes.keys.empty?
+    Facter.debug("Running ethtool on #{interface} didn't give any information")
+  end
+  attributes.each do |fact, value|
+    Facter.add("#{fact}_#{Facter::Util::IP.alphafy(interface)}") do
+      confine :kernel => "Linux"
+      setcode do
+        value
+      end
+    end
+  end
+end

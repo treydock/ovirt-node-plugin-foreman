@@ -31,6 +31,7 @@ Requires:       ovirt-node >= 3.0.0
 Requires:       facter
 Requires:       foreman-proxy
 Requires:       sudo
+Requires:       ethtool
 %if "@PLUGIN_DEBUG@" == "1"
 Requires:       openssh-server openssh-clients
 Requires:       file telnet lsof
