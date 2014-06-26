@@ -32,6 +32,8 @@ Requires:       facter
 Requires:       foreman-proxy
 Requires:       sudo
 Requires:       ethtool
+Requires:       OpenIPMI
+Requires:       OpenIPMI-tools
 %if "@PLUGIN_DEBUG@" == "1"
 Requires:       openssh-server openssh-clients
 Requires:       file telnet lsof
@@ -190,6 +192,9 @@ echo "foreman-proxy ALL=NOPASSWD: /sbin/shutdown" >> %{_sysconfdir}/sudoers
 
 # Developer enhacements
 echo "alias vim=vi" >> /root/.bashrc
+
+# enable IPMI by Defaults
+chkconfig ipmi on
 
 %files recipe
 %{recipe_root}
