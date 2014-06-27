@@ -136,6 +136,8 @@ sed -i 's/.*:bmc_default_provider:.*/:bmc_default_provider: shell/' %{_sysconfdi
 
 # Set setuid for those binaries that need root (and are called by foreman-proxy user)
 chmod +s /usr/sbin/dmidecode
+chmod +s /sbin/ethtool
+chmod +s /usr/bin/ipmitool
 
 # Enable Discover Host service (must be executed as the last - idle - service)
 %if 0%{?rhel} == 6
