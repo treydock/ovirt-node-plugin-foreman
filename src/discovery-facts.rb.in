@@ -40,3 +40,78 @@ Facter.add("discovery_bootif") do
     cmdline('BOOTIF', Facter.fact("macaddress").value).gsub(/^[a-fA-F0-9]+-/, '').gsub('-', ':') rescue '00:00:00:00:00:00'
   end
 end
+
+# Additional interface facts
+require 'facter/util/ip'
+
+Facter::Util::IP.get_interfaces.each do |interface|
+  Facter.debug("Running ethtool on interface #{interface}")
+  output = (Facter::Util::Resolution.exec("ethtool #{interface} 2>/dev/null"))
+  attributes = {}
+  output.each_line do |line|
+    next if line.nil? or line == ""
+    case line.strip
+    when /Speed: (.*)Mb/
+      attributes[:speed] = $1
+    when /Duplex: (.*)/
+      attributes[:duplex] = $1.downcase
+    when /Port: (.*)/
+      attributes[:port] = $1
+    when /Auto-negotiation: (.*)/
+      attributes[:auto_negotitation] = ($1 == 'on').to_s
+    when /^Wake-on: (.*)/
+      attributes[:wol] = $1.include?('g')
+    when /Link detected: (.*)/
+      attributes[:link] = ($1 == 'yes').to_s
+    end
+  end
+
+  if attributes.keys.empty?
+    Facter.debug("Running ethtool on #{interface} didn't give any information")
+  end
+  attributes.each do |fact, value|
+    Facter.add("#{fact}_#{Facter::Util::IP.alphafy(interface)}") do
+      confine :kernel => "Linux"
+      setcode do
+        value
+      end
+    end
+  end
+end
+
+# IPMI Facts
+%x{dmidecode -t 38 2>/dev/null|grep -q "IPMI Device"}
+has_ipmi = $?.exitstatus == 0
+
+if has_ipmi
+  output = Facter::Util::Resolution.exec("ipmitool lan print 1 2>/dev/null")
+  attributes = {}
+  output.each_line do |line|
+    case line.strip
+    when /^IP Address Source\s+: (.*)/
+      attributes[:ipaddress_source] = $1
+    when /^IP Address\s+: (.*)/
+      attributes[:ipaddress] = $1
+    when /^Subnet Mask\s+: (.*)/
+      attributes[:subnet_mask] = $1
+    when /^MAC Address\s+: (.*)/
+      attributes[:macaddress] = $1
+    when /^Default Gateway IP\s+: (.*)/
+      attributes[:gateway] = $1
+    end
+  end if output
+
+  if attributes.keys.empty?
+    Facter.debug("Running ipmitool didn't give any information")
+  end
+  attributes[:enabled] = true
+  attributes.each do |fact, value|
+    Facter.add("ipmi_#{fact}") do
+      confine :kernel => "Linux"
+      setcode do
+        value
+      end
+    end
+  end
+
+end
