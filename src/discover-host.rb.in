@@ -146,7 +146,7 @@ def upload
     http.use_ssl = true
     http.verify_mode = OpenSSL::SSL::VERIFY_NONE
   end
-  req = Net::HTTP::Post.new("/api/v2/discovered_hosts/facts", initheader = {'Content-Type' =>'application/json'})
+  req = Net::HTTP::Post.new("#{uri.path}/api/v2/discovered_hosts/facts", initheader = {'Content-Type' =>'application/json'})
   req.body = {'facts' => Facter.to_hash }.to_json
   response = http.request(req)
   debug "Response from Foreman #{response.code}: #{response.body}"
@@ -157,7 +157,7 @@ def upload
     # For backward compatibility reasons try to upload facts with the old API on /discovers
     ip = Facter.value('ipaddress')
     debug "Triggering import of facts from Foreman using old API (#{uri}, ip=#{ip})"
-    req = Net::HTTP::Post.new("/discovers")
+    req = Net::HTTP::Post.new("#{uri.path}/discovers")
     data = ip.nil? ? {} : {'ip' => ip}
     req.set_form_data(data)
     response = http.request(req)
