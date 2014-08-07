@@ -71,7 +71,6 @@ droprpm bfa-firmware
 droprpm bridge-utils
 droprpm btrfs-progs
 droprpm ceph-libs
-droprpm cracklib-dicts
 droprpm device-mapper-multipath
 droprpm dmraid
 droprpm dosfstools
@@ -153,14 +152,7 @@ droprpm ntpdate
 #drop /usr/share/groff
 #drop /usr/share/locale
 
-# The following packages are REQUIRED
-#
-# ruby
-# facter
-# sudo
-# ipmitool
-
-# The following packages are required to boot
+# The following packages are REQUIRED to boot
 #
 # ncurses-libs
 # NetworkManager-glib
@@ -170,6 +162,14 @@ droprpm ntpdate
 # sqlite
 # openldap
 # mozjs17
+
+# The following packages are REQUIRED to operate correctly
+#
+# ruby
+# facter
+# sudo
+# ipmitool
+# cracklib-dicts
 
 # The following packages SHOULD not be dropped
 # (used in development mode)

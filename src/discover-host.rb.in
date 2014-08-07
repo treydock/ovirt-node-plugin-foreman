@@ -149,10 +149,11 @@ def upload
   req = Net::HTTP::Post.new("#{uri.path}/api/v2/discovered_hosts/facts", initheader = {'Content-Type' =>'application/json'})
   req.body = {'facts' => Facter.to_hash }.to_json
   response = http.request(req)
-  debug "Response from Foreman #{response.code}: #{response.body}"
   if ['200','201'].include? response.code
+    debug "Response from Foreman #{response.code}: #{response.body}"
     return true
   else
+    error "Response from Foreman #{response.code}: #{response.body}"
     # <FIXME> - remove for Foreman 1.6
     # For backward compatibility reasons try to upload facts with the old API on /discovers
     ip = Facter.value('ipaddress')
