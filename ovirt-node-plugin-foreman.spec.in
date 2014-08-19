@@ -28,17 +28,20 @@ Group:          Applications/System
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 URL:            http://www.ovirt.org/
 Requires:       ovirt-node >= 3.0.0
-Requires:       facter
+Requires:       facter net-tools
 Requires:       foreman-proxy
 Requires:       sudo
 Requires:       ethtool
 Requires:       OpenIPMI
 Requires:       OpenIPMI-tools
+%if 0%{?rhel} > 6
+Requires:       NetworkManager
+%endif
 %if "@PLUGIN_DEBUG@" == "1"
 Requires:       openssh-server openssh-clients
-Requires:       file telnet lsof
+Requires:       file telnet lsof less
 %endif
-Requires(post): sed shadow-utils
+Requires(post): sed passwd shadow-utils
 
 BuildArch:      noarch
 
@@ -84,11 +87,16 @@ Provides kickstart files for generating an oVirt Node ISO image containing
 make install DESTDIR=%{buildroot}
 
 %post
+set -x
 # Modify login issue
 cat >%{_sysconfdir}/issue <<EOIS
 Foreman Discovery %{version}-%{release}
 Kernel \r on an \m (\l)
 EOIS
+
+# Some dependency removes redhat-release-server and this file
+# is needed for dracut to boot
+touch %{_sysconfdir}/os-release
 
 # Reserve tty1 only for logs
 %if 0%{?rhel} == 6
@@ -103,6 +111,11 @@ EOIS
     passwd -u root >/dev/null
     sed -i 's/^.*PasswordAuthentication.*$/PasswordAuthentication yes/' %{_sysconfdir}/ssh/sshd_config
     sed -i 's/^.*PermitRootLogin.*$/PermitRootLogin yes/' %{_sysconfdir}/ssh/sshd_config
+    %if 0%{?rhel} == 6
+        chkconfig sshd on
+    %else
+        systemctl enable sshd.service
+    %endif
 %else
     passwd -l root >/dev/null
 %endif
@@ -113,12 +126,13 @@ LOGLEVEL="DEBUG"
 %else
 LOGLEVEL="ERROR"
 %endif
+sed -i "s/.*:http_port:.*/:http_port: 8443/" %{_sysconfdir}/foreman-proxy/settings.yml
+sed -i "s/.*:daemon:.*/:daemon: true/" %{_sysconfdir}/foreman-proxy/settings.yml
 sed -i "s/.*:log_level:.*/:log_level: $LOGLEVEL/" %{_sysconfdir}/foreman-proxy/settings.yml
-sed -i 's/.*:bmc:.*/:bmc: true/' %{_sysconfdir}/foreman-proxy/settings.yml
-sed -i 's/.*:bmc_default_provider:.*/:bmc_default_provider: shell/' %{_sysconfdir}/foreman-proxy/settings.yml
+sed -i 's/.*:enabled:.*/:enabled: true/' %{_sysconfdir}/foreman-proxy/settings.d/bmc.yml
+sed -i 's/.*:bmc_default_provider:.*/:bmc_default_provider: shell/' %{_sysconfdir}/foreman-proxy/settings.d/bmc.yml
 
 # Connect smart-proxy standard output to tty1
-# TODO: on RHEL6 setup ownership of /dev/tty1 for o+w
 %if 0%{?rhel} == 6
     sed -i 's|.*:log_file:.*|:log_file: /dev/null|' %{_sysconfdir}/foreman-proxy/settings.yml
 %else
@@ -126,6 +140,7 @@ sed -i 's/.*:bmc_default_provider:.*/:bmc_default_provider: shell/' %{_sysconfdi
     sed '/^ExecStart/aStandardOutput=tty' -i /usr/lib/systemd/system/foreman-proxy.service
     sed '/^ExecStart/aTTYPath=/dev/tty1' -i /usr/lib/systemd/system/foreman-proxy.service
 %endif
+/sbin/usermod -a -G tty foreman-proxy
 
 # Enable Foreman Proxy service
 %if 0%{?rhel} == 6
@@ -197,6 +212,8 @@ echo "alias vim=vi" >> /root/.bashrc
 
 # enable IPMI by Defaults
 chkconfig ipmi on
+
+set -x
 
 %files recipe
 %{recipe_root}
