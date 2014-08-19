@@ -20,7 +20,7 @@
 Summary:        A plugin for Foreman Discovery nodes
 Name:           ovirt-node-plugin-foreman
 Version:        @VERSION@
-Release:        2%{?BUILD_NUMBER}%{?extra_release}%{?dist}
+Release:        3%{?BUILD_NUMBER}%{?extra_release}%{?dist}
 Source0:        %{name}-%{version}.tar.gz
 License:        GPLv2+
 Group:          Applications/System
@@ -231,6 +231,9 @@ set -x
 %{_sysconfdir}/ovirt-plugins.d
 
 %changelog
+* Tue Aug 19 2014 Lukas Zapletal <lzap+rpm@redhat.com> 0.5.9999-3
+- added support for RHEL7
+
 * Tue Jun 24 2014 Lukas Zapletal <lzap+rpm@redhat.com> 0.5.9999-2
 - do not overwrite ifcfg-lo configuration (dhclient segfault)
 
