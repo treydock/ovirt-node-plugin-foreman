@@ -1,0 +1,6 @@
+#!/bin/sh
+iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+sed -i 's/^.*PasswordAuthentication.*$/PasswordAuthentication yes/' /etc/sysconfig/ssh/sshd_config
+sed -i 's/^.*PermitRootLogin.*$/PermitRootLogin yes/' /etc/sysconfig/ssh/sshd_config
+service sshd restart
+ip addr show

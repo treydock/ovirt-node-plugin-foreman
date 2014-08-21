@@ -20,7 +20,7 @@
 Summary:        A plugin for Foreman Discovery nodes
 Name:           ovirt-node-plugin-foreman
 Version:        @VERSION@
-Release:        3%{?BUILD_NUMBER}%{?extra_release}%{?dist}
+Release:        4%{?BUILD_NUMBER}%{?extra_release}%{?dist}
 Source0:        %{name}-%{version}.tar.gz
 License:        GPLv2+
 Group:          Applications/System
@@ -136,9 +136,9 @@ sed -i 's/.*:bmc_default_provider:.*/:bmc_default_provider: shell/' %{_sysconfdi
 %if 0%{?rhel} == 6
     sed -i 's|.*:log_file:.*|:log_file: /dev/null|' %{_sysconfdir}/foreman-proxy/settings.yml
 %else
-    sed -i 's|.*:log_file:.*|:log_file: /dev/stdout|' %{_sysconfdir}/foreman-proxy/settings.yml
-    sed '/^ExecStart/aStandardOutput=tty' -i /usr/lib/systemd/system/foreman-proxy.service
-    sed '/^ExecStart/aTTYPath=/dev/tty1' -i /usr/lib/systemd/system/foreman-proxy.service
+    #sed -i 's|.*:log_file:.*|:log_file: /dev/stdout|' %{_sysconfdir}/foreman-proxy/settings.yml
+    #sed '/^ExecStart/aStandardOutput=tty' -i /usr/lib/systemd/system/foreman-proxy.service
+    #sed '/^ExecStart/aTTYPath=/dev/tty1' -i /usr/lib/systemd/system/foreman-proxy.service
 %endif
 /sbin/usermod -a -G tty foreman-proxy
 
@@ -221,6 +221,7 @@ set -x
 %files
 %{_bindir}/discover-host.rb
 %{_bindir}/find-missing-libs
+%{_bindir}/enable-ssh
 %{_datadir}/%{name}/discovery-facts.rb
 %if 0%{?rhel} == 6
 %{_sysconfdir}/rc.d/init.d/discover-host
@@ -231,6 +232,9 @@ set -x
 %{_sysconfdir}/ovirt-plugins.d
 
 %changelog
+* Thu Aug 21 2014 Lukas Zapletal <lzap+rpm@redhat.com> 0.5.9999-4
+- removed tty logging from smart proxy
+
 * Tue Aug 19 2014 Lukas Zapletal <lzap+rpm@redhat.com> 0.5.9999-3
 - added support for RHEL7
 

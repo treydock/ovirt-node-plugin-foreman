@@ -19,7 +19,8 @@
 
 dist_bin_SCRIPTS = \
 		   discover-host.rb \
-		   find-missing-libs
+		   find-missing-libs \
+		   enable-ssh
 
 if HAVE_SYSTEMD
 dist_systemdsystemunit_DATA = discover-host.service
