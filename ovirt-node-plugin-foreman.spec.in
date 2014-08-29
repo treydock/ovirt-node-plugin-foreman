@@ -192,19 +192,21 @@ echo "foreman-proxy ALL=NOPASSWD: /sbin/shutdown" >> %{_sysconfdir}/sudoers
 %endif
 
 # Setup network (excluding iptables)
-#%if 0%{?rhel} == 6
-    # Not using NetworkManager - configure network using our own start script
+%if 0%{?rhel} == 6
     chkconfig --add network-dynamic
     chkconfig network-dynamic on
     chkconfig network on
 
-    # We cannot modify sysconfig/network flag because this file gets overwritten by livecd-creator later on
-    sed -i 's/.*NETWORKING.*exit 6.*/#NETWORKING flag check turned off/' %{_sysconfdir}/init.d/network
-#%else
-    # Systemd only - force NetworkManager to wait for IP address
+%else
     #systemctl enable NetworkManager-wait-online.service
     systemctl disable NetworkManager
-#%endif
+
+    systemctl enable network
+    systemctl enable network-dynamic
+%endif
+
+# We cannot modify sysconfig/network flag because this file gets overwritten by livecd-creator later on
+sed -i 's/.*NETWORKING.*exit 6.*/#NETWORKING flag check turned off/' %{_sysconfdir}/init.d/network
 
 # When using ntpdate during start, do not pause when time servers not available (if service is enabled)
 [ -f %{_sysconfdir}/sysconfig/ntpdate ] && sed -i -e 's/^.*RETRIES.*$/RETRIES=0/g' %{_sysconfdir}/sysconfig/ntpdate
@@ -225,9 +227,9 @@ set -x
 %{_bindir}/find-missing-libs
 %{_bindir}/enable-ssh
 %{_datadir}/%{name}/discovery-facts.rb
+%{_sysconfdir}/rc.d/init.d/network-dynamic
 %if 0%{?rhel} == 6
 %{_sysconfdir}/rc.d/init.d/discover-host
-%{_sysconfdir}/rc.d/init.d/network-dynamic
 %else
 %{_unitdir}/discover-host.service
 %endif
