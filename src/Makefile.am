@@ -22,12 +22,13 @@ dist_bin_SCRIPTS = \
 		   find-missing-libs \
 		   enable-ssh
 
+initddir = $(sysconfdir)/rc.d/init.d
+
 if HAVE_SYSTEMD
 dist_systemdsystemunit_DATA = discover-host.service
+initd_SCRIPTS = network-dynamic
 else
-initddir = $(sysconfdir)/rc.d/init.d
-initd_SCRIPTS = discover-host \
-		network-dynamic
+initd_SCRIPTS = network-dynamic discover-host
 endif
 
 dist_pkgdata_DATA = discovery-facts.rb

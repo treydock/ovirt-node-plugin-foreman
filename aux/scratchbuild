@@ -1,0 +1,8 @@
+#!/bin/bash
+
+for DIST in 6 7; do
+  make distclean
+  ./autogen.sh --enable-debug
+  SRPM=$(RPM_FLAGS="--define 'dist .el$DIST'" make srpms | tail -n1 | awk '{print $2}')
+  brew build --scratch satellite-6.0.4-rhel-$DIST-candidate $SRPM
+done

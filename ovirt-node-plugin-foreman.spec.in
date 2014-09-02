@@ -20,7 +20,7 @@
 Summary:        A plugin for Foreman Discovery nodes
 Name:           ovirt-node-plugin-foreman
 Version:        @VERSION@
-Release:        5%{?BUILD_NUMBER}%{?extra_release}%{?dist}
+Release:        1%{?BUILD_NUMBER}%{?extra_release}%{?dist}
 Source0:        %{name}-%{version}.tar.gz
 License:        GPLv2+
 Group:          Applications/System
@@ -164,7 +164,7 @@ chmod +s /usr/bin/ipmitool
 %endif
 
 # Disable unwanted services (will be removed during minimizer phase later on)
-for S in ovirt ovirt-awake ovirt-early ovirt-firstboot ovirt-kdump ovirt-post ntpd ntpdate iscsi iscsid kdump ksm ksmtuned nfslock rpcbind; do
+for S in ovirt ovirt-awake ovirt-early ovirt-firstboot ovirt-kdump ovirt-post ntpd ntpdate iscsi iscsid kdump ksm ksmtuned nfslock rpcbind ipmi; do
 %if 0%{?rhel} == 6
     chkconfig $S off
 %else
@@ -236,6 +236,9 @@ set -x
 %{_sysconfdir}/ovirt-plugins.d
 
 %changelog
+* Fri Aug 29 2014 Lukas Zapletal <lzap+rpm@redhat.com> 0.6.0-1
+- enabled network-dynamic script for RHEL7
+
 * Fri Aug 29 2014 Lukas Zapletal <lzap+rpm@redhat.com> 0.5.9999-5
 - disabled NetworkManager for RHEL7
 
