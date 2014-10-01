@@ -11,10 +11,14 @@ export WITH_GIT_BRANCH=${6:-master}
 
 # give the VM some time to finish booting and network configuration
 sleep 30
+yum -y install epel-release
+
 yum -y install livecd-tools appliance-tools-minimizer fedora-packager \
   python-devel rpm-build createrepo selinux-policy-doc checkpolicy \
   selinux-policy-devel autoconf automake python-mock python-lockfile \
   python-nose git-review qemu-kvm hardlink git wget
+
+sed -r -i 's/^(Defaults\s+requiretty)/#\1/g' /etc/sudoers
 
 # build plugin
 pushd /root

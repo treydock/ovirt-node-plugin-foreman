@@ -20,18 +20,20 @@ SHELLARGS << ENV['repoowner'] || ''
 SHELLARGS << ENV['branch'] || ''
 SHELLARGS << ENV['ovirt_node_tools_gittag'] || ''
 SHELLARGS << ENV['ovirt_git_branch'] || ''
+SHELLARGS.delete_if { |e| e.nil? }
 
 Vagrant.configure("2") do |config|
   boxes.each do |box|
     config.vm.define box[:name], primary: box[:default] do |machine|
       machine.vm.box = box[:name]
       machine.vm.hostname = "foreman-#{box[:name]}.builder.theforeman.org"
-      machine.vm.provision :shell, :path => 'build_image.sh', :args => SHELLARGS
+      machine.vm.provision :shell, :path => 'build_image.sh', :args => SHELLARGS.empty? ? "" : SHELLARGS
 
       machine.vm.provider :libvirt do |p, override|
         override.vm.box = "#{box[:libvirt]}"
         override.vm.box_url = "http://m0dlx.com/files/foreman/boxes/#{box[:libvirt].sub(/^fm-/, '')}.box"
         p.memory = 1024
+        override.vm.synced_folder './', '/vagrant', :type => 'rsync'
       end
 
       machine.vm.provider :rackspace do |p, override|
